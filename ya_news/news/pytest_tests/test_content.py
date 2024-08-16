@@ -14,6 +14,7 @@ from news.models import Comment, News
 
 User = get_user_model()
 
+
 class TestHomePage(TestCase):
     # Вынесем ссылку на домашнюю страницу в атрибуты класса.
     HOME_URL = reverse('news:home')
@@ -57,7 +58,7 @@ class TestHomePage(TestCase):
         # Сортируем полученный список по убыванию.
         sorted_dates = sorted(all_dates, reverse=True)
         # Проверяем, что исходный список был отсортирован правильно.
-        self.assertEqual(all_dates, sorted_dates) 
+        self.assertEqual(all_dates, sorted_dates)
 
 
 class TestDetailPage(TestCase):
@@ -108,7 +109,7 @@ class TestDetailPage(TestCase):
         """
         response = self.client.get(self.detail_url)
         self.assertNotIn('form', response.context)
-        
+
     def test_authorized_client_has_form(self):
         """Авторизованному пользователю доступна форма
         для отправки комментария на странице отдельной новости
@@ -119,4 +120,3 @@ class TestDetailPage(TestCase):
         self.assertIn('form', response.context)
         # Проверим, что объект формы соответствует нужному классу формы.
         self.assertIsInstance(response.context['form'], CommentForm)
-                 

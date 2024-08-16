@@ -8,7 +8,7 @@ from news.models import News
 class TestNews(TestCase):
 
     # В методе класса setUpTestData создаём тестовые объекты.
-    # Оборачиваем метод соответствующим декоратором.    
+    # Оборачиваем метод соответствующим декоратором.
     @classmethod
     def setUpTestData(cls):
         # Стандартным методом Django ORM create() создаём объект класса.

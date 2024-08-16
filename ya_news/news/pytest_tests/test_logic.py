@@ -17,7 +17,7 @@ class TestCommentCreation(TestCase):
     # поэтому запишем его в атрибуты класса.
     COMMENT_TEXT = 'Текст комментария'
     NEW_COMMENT_TEXT = 'Обновлённый комментарий'
-   
+
     @classmethod
     def setUpTestData(cls):
         cls.news = News.objects.create(title='Заголовок', text='Текст')
@@ -58,8 +58,10 @@ class TestCommentCreation(TestCase):
         self.assertEqual(comment.author, self.user)
 
     def test_user_cant_use_bad_words(self):
-        """Проверка на нецензурные слова в коментах,
-        невозможно оставить коммент с нецензурными словами"""
+        """
+        Проверка на нецензурные слова в коментах,
+        невозможно оставить коммент с нецензурными словами
+        """
         # Формируем данные для отправки формы; текст включает
         # первое слово из списка стоп-слов.
         bad_words_data = {'text': f'Какой-то текст, {BAD_WORDS[0]}, еще текст'}
@@ -76,6 +78,7 @@ class TestCommentCreation(TestCase):
         comments_count = Comment.objects.count()
         self.assertEqual(comments_count, 0)
 
+
 class TestCommentEditDelete(TestCase):
     # Тексты для комментариев не нужно дополнительно создавать
     # (в отличие от объектов в БД), им не нужны ссылки на self или cls,
@@ -87,9 +90,9 @@ class TestCommentEditDelete(TestCase):
     def setUpTestData(cls):
         # Создаём новость в БД.
         cls.news = News.objects.create(title='Заголовок', text='Текст')
-        # Формируем адрес блока с комментариями, который понадобится для тестов.
-        news_url = reverse('news:detail', args=(cls.news.id,))  # Адрес новости.
-        cls.url_to_comments = news_url + '#comments'  # Адрес блока с комментариями.
+        # Формируем адрес блока с комментариями, для тестов.
+        news_url = reverse('news:detail', args=(cls.news.id,))  # Адрес новости
+        cls.url_to_comments = news_url + '#comments'  # Адрес с комментариями.
         # Создаём пользователя - автора комментария.
         cls.author = User.objects.create(username='Автор комментария')
         # Создаём клиент для пользователя-автора.
@@ -123,8 +126,8 @@ class TestCommentEditDelete(TestCase):
         # Считаем количество комментариев в системе.
         comments_count = Comment.objects.count()
         # Ожидаем ноль комментариев в системе.
-        self.assertEqual(comments_count, 0) 
-    
+        self.assertEqual(comments_count, 0)
+
     def test_user_cant_delete_comment_of_another_user(self):
         """Пользователь не может удалить чужой комментарий"""
         # Выполняем запрос на удаление от пользователя-читателя.

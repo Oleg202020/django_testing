@@ -66,7 +66,7 @@ class TestRoutes(TestCase):
             (self.reader, 404),
             (self.author, HTTPStatus.OK),
         )
-        for user, status in users_statuses:  
+        for user, status in users_statuses:
             # выбираем автора и ответ при использовании автора страницы
             self.client.force_login(user)  # логиним автора
             for name_page in urls:  # Перебирем страницы в цикле
@@ -74,7 +74,7 @@ class TestRoutes(TestCase):
                     response = self.client.get(name_page)
                     print(response.status_code, user)
                     self.assertEqual(response.status_code, status)
-    я пробовал этот вариант перед сдачей ещё, 
+    я пробовал этот вариант перед сдачей ещё,
     но чёт не докопался до нужного кода
     '''
     def test_availability_for_diferent_user(self):
@@ -98,7 +98,7 @@ class TestRoutes(TestCase):
             with self.subTest(user=self.author, name=name):
                 response = self.client.get(name)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
-    
+
     def test_redirect_for_anonymous_client(self):
         """
         При попытке перейти на страницу списка заметок,

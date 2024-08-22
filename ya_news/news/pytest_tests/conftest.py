@@ -1,5 +1,4 @@
 import pytest
-from datetime import datetime, timedelta
 from django.test.client import Client
 
 from news.models import News, Comment

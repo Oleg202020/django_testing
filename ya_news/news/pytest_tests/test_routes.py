@@ -1,85 +1,66 @@
+import pytest
 from http import HTTPStatus
 
-from django.contrib.auth import get_user_model
-from django.test import TestCase
+from pytest_django.asserts import assertRedirects
 from django.urls import reverse
 
-from news.models import Comment, News
 
-User = get_user_model()
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    'name, args',
+    (
+        ('news:home', None),
+        ('news:detail', pytest.lazy_fixture('pk_args')),
+        ('users:login', None),
+        ('users:logout', None),
+        ('users:signup', None)
+    )
+)
+def test_pages_availability_for_anonymous_user(client, name, args):
+    """
+    Главная страница доступна анонимному пользователю
+    Страница отдельной новости доступна анонимному пользователю.
+    Страницы регистрации пользователей, входа в учётную запись и
+    выхода из неё доступны анонимным пользователям.
+    """
+    url = reverse(name, args=args)  # Получаем ссылку на нужный адрес.
+    response = client.get(url)  # Выполняем запрос.
+    assert response.status_code == HTTPStatus.OK
 
 
-class TestRoutes(TestCase):
+@pytest.mark.parametrize(
+    'parametrized_client, expected_status',
+    (
+        (pytest.lazy_fixture('not_author_client'), HTTPStatus.NOT_FOUND),
+        (pytest.lazy_fixture('author_client'), HTTPStatus.OK)
+    ),
+)
+@pytest.mark.parametrize(
+    'name',
+    ('news:edit', 'news:delete'),
+)
+def test_availability_for_comment_edit_and_delete(
+    parametrized_client, expected_status, name, pk_args
+):
+    """Авторизованный пользователь не может зайти на страницы редактирования
+    или удаления чужих комментариев (возвращается ошибка 404).
+    """
+    url = reverse(name, args=pk_args)
+    response = parametrized_client.get(url)
+    assert response.status_code == expected_status
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.news = News.objects.create(title='Заголовок', text='Текст')
-        # Создаём двух пользователей с разными именами:
-        cls.author = User.objects.create(username='Лев Толстой')
-        cls.reader = User.objects.create(username='Читатель простой')
-        # От имени одного пользователя создаём комментарий к новости:
-        cls.comment = Comment.objects.create(
-            news=cls.news,
-            author=cls.author,
-            text='Текст комментария'
-        )
 
-    def test_pages_availability(self):
-        """
-        Cтраницы доступные для анонимного пользователя
-        Главная страница доступна анонимному пользователю
-        Страница отдельной новости доступна анонимному пользователю.
-        """
-        urls = (
-            ('news:home', None),
-            ('news:detail', (self.news.id,)),
-            ('users:login', None),
-            ('users:logout', None),
-            ('users:signup', None),
-        )
-        for name, args in urls:
-            with self.subTest(name=name):
-                url = reverse(name, args=args)
-                response = self.client.get(url)
-                self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_availability_for_comment_edit_and_delete(self):
-        """Автор может зайти на страницу редактирования своего комментария.
-        Автор может зайти на страницу удаления своего комментария.
-        Читатель не может зайти на страницу редактирования чужого комментария.
-        Читатель не может зайти на страницу удаления чужого комментария.
-        """
-        users_statuses = (
-            (self.author, HTTPStatus.OK),
-            (self.reader, HTTPStatus.NOT_FOUND),
-        )
-        for user, status in users_statuses:
-            # Логиним пользователя в клиенте:
-            self.client.force_login(user)
-            # Для каждой пары "пользователь - ожидаемый ответ"
-            # перебираем имена тестируемых страниц:
-            for name in ('news:edit', 'news:delete'):
-                with self.subTest(user=user, name=name):
-                    url = reverse(name, args=(self.comment.id,))
-                    response = self.client.get(url)
-                    self.assertEqual(response.status_code, status)
-
-    def test_redirect_for_anonymous_client(self):
-        """При попытке перейти на страницу редактирования
-        или удаления комментария, анонимный пользователь перенаправляется
-        на страницу авторизации
-        """
-        login_url = reverse('users:login')
-        # В цикле перебираем имена страниц, с которых ожидаем редирект:
-        for name in ('news:edit', 'news:delete'):
-            with self.subTest(name=name):
-                # Получаем адрес редактирования или удаления комментария:
-                url = reverse(name, args=(self.comment.id,))
-                # Получаем ожидаемый адрес страницы логина,
-                # на который будет перенаправлен пользователь.
-                # в адресе будет параметр next, в котором передаётся
-                # адрес страницы, с которой пользователь был переадресован.
-                redirect_url = f'{login_url}?next={url}'
-                response = self.client.get(url)
-                # Проверяем, что редирект приведёт именно на указанную ссылку.
-                self.assertRedirects(response, redirect_url)
+@pytest.mark.parametrize(
+    'name',
+    ('news:edit', 'news:delete'),
+)
+def test_redirect_client(name, client, pk_args):
+    """
+    Редирект анонимного пользователя
+    будет перенаправлен на страницу логина
+    """
+    login_url = reverse('users:login')
+    url = reverse(name, args=pk_args)
+    expected_url = f'{login_url}?next={url}'
+    response = client.get(url)
+    assertRedirects(response, expected_url)

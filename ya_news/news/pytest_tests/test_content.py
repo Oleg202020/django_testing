@@ -1,41 +1,36 @@
-import pytest
-from django.urls import reverse
+from django.conf import settings
 
 from news.forms import CommentForm
 
 
-pytestmark = pytest.mark.django_db
-
-
-def test_count_on_home_page(client):
+def test_count_on_home_page(client, news_home):
     """Количество новостей на главной странице — не более 10."""
-    url = reverse('news:home')
-    response = client.get(url)
-    object_list = response.context.get('object_list')
+    response = client.get(news_home)
+    object_list = response.context['object_list']
+    assert object_list is not None
     news_count = object_list.count()
-    assert news_count <= 10
+    assert news_count <= (settings.NEWS_COUNT_ON_HOME_PAGE + 1)
 
 
-def test_sort_news_on_home_page(client):
+def test_sort_news_on_home_page(client, news_home):
     """
     Новости отсортированы от самой свежей к самой старой.
     Свежие новости в начале списка.
     """
-    url = reverse('news:home')
-    response = client.get(url)
-    object_list = response.context.get('object_list')
+    response = client.get(news_home)
+    object_list = response.context['object_list']
+    assert object_list is not None
     all_news_dates = [news.date for news in object_list]
     news_sorted = sorted(all_news_dates, reverse=True)
     assert news_sorted == all_news_dates
 
 
-def test_create_note_page_contains_form(client, news):
+def test_create_note_page_contains_form(client, news, news_detail):
     """
     Комментарии на странице отдельной новости отсортированы в
     хронологическом порядке: старые в начале списка, новые — в конце.
     """
-    url = reverse('news:detail', args=(news.id,))
-    response = client.get(url)
+    response = client.get(news_detail)
     assert 'news' in response.context
     news = response.context['news']
     all_comments = news.comment_set.all()
@@ -44,22 +39,20 @@ def test_create_note_page_contains_form(client, news):
     assert sorted_comments == all_comments
 
 
-def test_edit_note_page_contains_form(author_client, pk_args):
+def test_edit_note_page_contains_form(author_client, news_detail):
     """
     авторизованному пользователю доступна форма
     для отправки комментария на странице отдельной новости.
     """
-    url = reverse('news:detail', args=pk_args)
     # Запрашиваем страницу редактирования заметки:
-    response = author_client.get(url)
+    response = author_client.get(news_detail)
     # Проверяем, есть ли объект form в словаре контекста:
     assert 'form' in response.context
     # Проверяем, что объект формы относится к нужному классу.
     assert isinstance(response.context['form'], CommentForm)
 
 
-def test_pages_contains_form_for_non_authorize_user(client, pk_args):
+def test_pages_contains_form_for_non_authorize_user(client, news_detail):
     """Анонимному пользователю недоступна форма для отправки комментария"""
-    url = reverse('news:detail', args=pk_args)
-    response = client.get(url)
+    response = client.get(news_detail)
     assert 'form' not in response.context

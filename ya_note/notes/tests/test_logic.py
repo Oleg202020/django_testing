@@ -104,4 +104,3 @@ class TestContent(TestClassContent):
         self.reader_client.post(self.delete_url)
         notes_not_delet = Note.objects.count()
         self.assertEqual(notes_not_delet, notes_in_bd)
-

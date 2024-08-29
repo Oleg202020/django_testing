@@ -38,7 +38,7 @@ class TestRoutes(TestClassContent):
         for name_page, user, status in urls:
             # выбираем автора и ответ при использовании автора страницы
             self.client.force_login(user)  # логиним автора
-            with self.subTest(user=user, name=name_page, status=status): # ------------------------------- проверить параметры потом
+            with self.subTest(user=user, name=name_page, status=status):
                 response = self.client.get(name_page)
                 self.assertEqual(response.status_code, status)
 

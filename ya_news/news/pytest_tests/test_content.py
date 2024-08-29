@@ -1,10 +1,9 @@
-import pytest
 from django.conf import settings
 
 from news.forms import CommentForm
 
 
-def test_count_on_home_page(client, news_home, all_news):  # ---------------- передать фикстуру с 10 новостями в функцию
+def test_count_on_home_page(client, news_home, all_news):
     """Количество новостей на главной странице — не более 10."""
     response = client.get(news_home)
     object_list = response.context['object_list']
@@ -13,7 +12,7 @@ def test_count_on_home_page(client, news_home, all_news):  # ---------------- п
     assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
-def test_sort_news_on_home_page(client, news_home, all_news):  # ---------------- передать фикстуру с 10 новостями в функцию
+def test_sort_news_on_home_page(client, news_home, all_news):
     """
     Новости отсортированы от самой свежей к самой старой.
     Свежие новости в начале списка.
@@ -26,7 +25,7 @@ def test_sort_news_on_home_page(client, news_home, all_news):  # ---------------
     assert news_sorted == all_news_dates
 
 
-def test_create_note_page_contains_form(client, all_news, news_detail):  # ---------------- передать фикстуру с 10 коментариями в функцию
+def test_create_note_page_contains_form(client, all_news, news_detail):
     """
     Комментарии на странице отдельной новости отсортированы в
     хронологическом порядке: старые в начале списка, новые — в конце.

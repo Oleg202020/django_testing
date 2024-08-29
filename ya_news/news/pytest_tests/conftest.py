@@ -49,16 +49,6 @@ def news(author):
 
 
 @pytest.fixture
-def news_10(author):
-    """Фикстура для создания новости"""
-    for index in range(10):
-        News.objects.create(
-            title='Заголовок',
-            text=f'Текст новости{index}',
-        )
-
-
-@pytest.fixture
 def comment(author, news):
     """создание коментария"""
     return Comment.objects.create(

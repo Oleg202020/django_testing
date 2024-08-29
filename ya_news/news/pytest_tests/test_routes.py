@@ -4,30 +4,30 @@ import pytest
 from pytest_django.asserts import assertRedirects
 
 
-News_Home_URL = pytest.lazy_fixture('news_home')
-News_Edit_URL = pytest.lazy_fixture('news_edit')
-News_Delete_URL = pytest.lazy_fixture('news_delete')
-News_Detail_URL = pytest.lazy_fixture('news_detail')
-Users_Login_URL = pytest.lazy_fixture('users_login')
-Users_Logout_URL = pytest.lazy_fixture('users_logout')
-Users_Signup_URL = pytest.lazy_fixture('users_signup')
-Not_Autor = pytest.lazy_fixture('not_author_client')
-Anonimus_Client = pytest.lazy_fixture('client')
-Autor_client = pytest.lazy_fixture('author_client')
+NEWS_HOME_URL = pytest.lazy_fixture('news_home')
+NEWS_EDIT_URL = pytest.lazy_fixture('news_edit')
+NEWS_DELETE_URL = pytest.lazy_fixture('news_delete')
+NEWS_DETAIL_URL = pytest.lazy_fixture('news_detail')
+USERS_LOGIN_URL = pytest.lazy_fixture('users_login')
+USERS_LOGOUT_URL = pytest.lazy_fixture('users_logout')
+USERS_SIGNUP_URL = pytest.lazy_fixture('users_signup')
+NOT_AUTOR = pytest.lazy_fixture('not_author_client')
+ANONIMUS_CLIENT = pytest.lazy_fixture('client')
+AUTOR_CLIENT = pytest.lazy_fixture('author_client')
 
 
 @pytest.mark.parametrize(
     'url, parametrized_client, expected_status',
     (
-        (News_Home_URL, Anonimus_Client, HTTPStatus.OK),
-        (News_Detail_URL, Anonimus_Client, HTTPStatus.OK),
-        (Users_Login_URL, Anonimus_Client, HTTPStatus.OK),
-        (Users_Logout_URL, Anonimus_Client, HTTPStatus.OK),
-        (Users_Signup_URL, Anonimus_Client, HTTPStatus.OK),
-        (News_Edit_URL, Autor_client, HTTPStatus.OK),
-        (News_Delete_URL, Autor_client, HTTPStatus.OK),
-        (News_Edit_URL, Not_Autor, HTTPStatus.NOT_FOUND),
-        (News_Delete_URL, Not_Autor, HTTPStatus.NOT_FOUND),
+        (NEWS_HOME_URL, ANONIMUS_CLIENT, HTTPStatus.OK),
+        (NEWS_DETAIL_URL, ANONIMUS_CLIENT, HTTPStatus.OK),
+        (USERS_LOGIN_URL, ANONIMUS_CLIENT, HTTPStatus.OK),
+        (USERS_LOGOUT_URL, ANONIMUS_CLIENT, HTTPStatus.OK),
+        (USERS_SIGNUP_URL, ANONIMUS_CLIENT, HTTPStatus.OK),
+        (NEWS_EDIT_URL, AUTOR_CLIENT, HTTPStatus.OK),
+        (NEWS_DELETE_URL, AUTOR_CLIENT, HTTPStatus.OK),
+        (NEWS_EDIT_URL, NOT_AUTOR, HTTPStatus.NOT_FOUND),
+        (NEWS_DELETE_URL, NOT_AUTOR, HTTPStatus.NOT_FOUND),
     )
 )
 def test_pages_availability_for_anonymous_user(
@@ -45,7 +45,7 @@ def test_pages_availability_for_anonymous_user(
 
 @pytest.mark.parametrize(
     'url',
-    (News_Edit_URL, News_Delete_URL),
+    (NEWS_EDIT_URL, NEWS_DELETE_URL),
 )
 def test_redirect_client(url, client, users_login):
     """

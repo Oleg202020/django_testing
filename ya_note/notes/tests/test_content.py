@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user, get_user_model
 
 from notes.forms import NoteForm
 from notes.tests.class_fikst import TestClassContent
@@ -15,15 +15,14 @@ class TestContent(TestClassContent):
         заметки другого пользователя
         """
         uesers_members = (
-            (self.author, self.assertIn),
-            (self.reader, self.assertNotIn),
+            (self.author_client, self.assertIn),
+            (self.reader_client, self.assertNotIn),
         )
-        for name, asert_is in uesers_members:
-            self.client.force_login(name)
-            with self.subTest(name=name):
-                response = self.client.get(self.list_url)
+        for user, aserts_is in uesers_members:
+            with self.subTest(user=get_user(user), aserts_is=aserts_is):
+                response = user.get(self.list_url)
                 object_list = response.context['object_list']
-                asert_is(self.note, object_list)
+                aserts_is(self.note, object_list)
 
     def test_pages_contains_form(self):
         """Проверка передачи формы  на страницы при создании
@@ -33,8 +32,8 @@ class TestContent(TestClassContent):
             self.add_url,
             self.edit_url,
         )
-        for name in urls:
-            with self.subTest(name=name):
-                response = self.author_client.get(name)
+        for url in urls:
+            with self.subTest(name=url):
+                response = self.author_client.get(url)
                 self.assertIn('form', response.context)
                 self.assertIsInstance(response.context['form'], NoteForm)

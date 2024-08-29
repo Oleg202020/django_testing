@@ -40,11 +40,22 @@ def not_author_client(not_author):
 
 
 @pytest.fixture
-def news():
+def news(author):
+    """Фикстура для создания новости"""
     return News.objects.create(
         title='Заголовок',
         text='Текст новости',
     )
+
+
+@pytest.fixture
+def news_10(author):
+    """Фикстура для создания новости"""
+    for index in range(10):
+        News.objects.create(
+            title='Заголовок',
+            text=f'Текст новости{index}',
+        )
 
 
 @pytest.fixture
@@ -59,10 +70,7 @@ def comment(author, news):
 
 @pytest.fixture
 def all_news():
-    """
-    Фикстура для создания нескольких новостей
-    для проверки пагинации и сортировки новостей
-    """
+    """для проверки пагинации и сортировки новостей"""
     today = datetime.today()
     all_news = [
         News(

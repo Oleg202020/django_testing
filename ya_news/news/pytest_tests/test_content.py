@@ -25,7 +25,7 @@ def test_sort_news_on_home_page(client, news_home, all_news):
     assert news_sorted == all_news_dates
 
 
-def test_create_note_page_contains_form(client, all_news, news_detail):
+def test_note_page_contains_sort_comments(client, all_comments, news_detail):
     """
     Комментарии на странице отдельной новости отсортированы в
     хронологическом порядке: старые в начале списка, новые — в конце.

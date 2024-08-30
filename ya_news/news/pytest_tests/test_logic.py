@@ -63,21 +63,15 @@ def test_author_can_edit_comment(
 ):
     """Авторизованный пользователь может редактировать совой комментарий"""
     comment_old = Comment.objects.get(pk=comment.id)
-    # old_news_id = comment.news_id
     response = author_client.post(
         news_edit,
         data=NEW_COMENT
     )
     assertRedirects(response, f'{news_detail}#comments')
-    # comment_new = comment.text
     comment_new = Comment.objects.get(pk=comment.id)
-    # comment.refresh_from_db()
-    # assert comment.news_id == old_news_id
-    # assert comment_new != COMENT_TEXT сохранённая переменная до обновления
     assert comment_new.author_id == comment_old.author_id
-    # сохранённая переменная после обновления базы
-    # assert comment.text == NEW_COMENT['text']
     assert comment_new.text == NEW_COMENT['text']
+    assert comment_new.news == comment_old.news
 
 
 def test_author_can_delete_comment(
@@ -109,19 +103,11 @@ def test_not_author_cant_edit_comment(
 ):
     """Авторизованный пользователь не может редактировать чужие комментарии."""
     comment_old = Comment.objects.get(pk=comment.id)
-    # old_text = comment.text
-    # old_id_author = comment.author_id
-    # old_news_id = comment.news_id
     not_author_client.post(
         news_edit,
         data=NEW_COMENT
     )
     comment_new = Comment.objects.get(pk=comment.id)
-    # comment_new = comment.text
-    # comment.refresh_from_db()
     assert comment_new.author_id == comment_old.author_id
     assert comment_new.text == comment_old.text
-    # assert comment_new == old_text
-    # assert comment.text == old_text
-    # assert comment.author_id == old_id_author
-    # assert comment.news_id == old_news_id
+    assert comment_new.news == comment_old.news

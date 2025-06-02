@@ -3,7 +3,6 @@ from http import HTTPStatus
 import pytest
 from pytest_django.asserts import assertRedirects
 
-
 NEWS_HOME_URL = pytest.lazy_fixture('news_home')
 NEWS_EDIT_URL = pytest.lazy_fixture('news_edit')
 NEWS_DELETE_URL = pytest.lazy_fixture('news_delete')

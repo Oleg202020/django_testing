@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user, get_user_model
-
 from notes.forms import NoteForm
 from notes.tests.class_fikst import TestClassContent
 

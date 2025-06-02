@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
-
 from notes.tests.class_fikst import TestClassContent
 
 User = get_user_model()

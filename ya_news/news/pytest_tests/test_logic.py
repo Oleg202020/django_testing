@@ -1,9 +1,7 @@
 import pytest
-from pytest_django.asserts import assertFormError, assertRedirects
-
 from news.forms import WARNING
 from news.models import Comment
-
+from pytest_django.asserts import assertFormError, assertRedirects
 
 NEWS_DETAIL_URL = pytest.lazy_fixture('news_detail')
 
